@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, ArrowRight, PlusCircle, ChevronDown } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowRight, PlusCircle, ChevronDown, Eye } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { PublicLayout } from './PublicLayout';
 import apiService from '../services/api';
 import { ImageCarousel } from './ImageCarousel';
+import { ProjectDetails } from './ProjectDetails';
 
 const DiscoveryFilters = ({
   categories,
@@ -142,6 +143,9 @@ export const Projects = () => {
   const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(6);
+
+  // Project details modal state
+  const [selectedProject, setSelectedProject] = useState(null);
 
   // Filter states
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -288,6 +292,34 @@ export const Projects = () => {
   };
 
   const activeFilterCount = selectedCategories.length + selectedTechnologies.length + (selectedStatus ? 1 : 0) + (searchQuery ? 1 : 0);
+
+  // Handle project details modal
+  const handleProjectClick = (project) => {
+    // Get all images for this project from projectImages state
+    const projectAllImages = projectImages[project.id] || [project.project_image || project.image || 'https://via.placeholder.com/800x400'];
+
+    // Transform project data to match ProjectDetails component expectations
+    const transformedProject = {
+      id: project.id,
+      title: project.title,
+      desc: project.description || project.desc,
+      img: project.project_image || project.image || 'https://via.placeholder.com/800x400',
+      images: projectAllImages, // Pass all images array
+      status: project.status || 'Active',
+      category: project.category || 'Development',
+      tech: project.technologies_used ? project.technologies_used.split(',').map(t => t.trim()) : ['REACT', 'NODEJS'],
+      lead: project.lead_name || 'System Administrator',
+      leadAvatar: project.lead_avatar || 'https://via.placeholder.com/100',
+      created_at: project.created_at,
+      team_size: project.team_size || 'Small'
+    };
+
+    setSelectedProject(transformedProject);
+  };
+
+  const closeProjectDetails = () => {
+    setSelectedProject(null);
+  };
 
   if (loading) {
     return (
@@ -476,7 +508,10 @@ export const Projects = () => {
                         />
                       ))}
                     </div>
-                    <button className="flex items-center gap-2 px-6 py-2.5 bg-primary text-on-primary rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-primary-container transition-all scale-[0.98] active:scale-[0.95]">
+                    <button
+                      onClick={() => handleProjectClick(project)}
+                      className="flex items-center gap-2 px-6 py-2.5 bg-primary text-on-primary rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-primary-container transition-all scale-[0.98] active:scale-[0.95]"
+                    >
                       View Project
                       <ArrowRight className="w-4 h-4" />
                     </button>
@@ -581,6 +616,14 @@ export const Projects = () => {
             Clear All Filters
           </button>
         </div>
+      )}
+
+      {/* Project Details Modal */}
+      {selectedProject && (
+        <ProjectDetails
+          project={selectedProject}
+          onClose={closeProjectDetails}
+        />
       )}
     </PublicLayout>
   );

@@ -81,29 +81,82 @@
 }
 
 /* Custom utility classes */
-.bg-primary { background-color: var(--primary); }
-.bg-primary-container { background-color: var(--primary-container); }
-.bg-primary-fixed { background-color: var(--primary-fixed); }
-.bg-surface { background-color: var(--surface); }
-.bg-surface-container { background-color: var(--surface-container); }
-.bg-surface-container-low { background-color: var(--surface-container-low); }
-.bg-surface-container-lowest { background-color: var(--surface-container-lowest); }
+.bg-primary {
+  background-color: var(--primary);
+}
 
-.text-primary { color: var(--primary); }
-.text-on-primary { color: var(--on-primary); }
-.text-on-surface { color: var(--on-surface); }
-.text-on-surface-variant { color: var(--on-surface-variant); }
-.text-on-primary-fixed { color: var(--on-primary-fixed); }
-.text-on-primary-fixed-variant { color: var(--on-primary-fixed-variant); }
-.text-on-tertiary-fixed { color: var(--on-tertiary-fixed); }
+.bg-primary-container {
+  background-color: var(--primary-container);
+}
 
-.border-primary { border-color: var(--primary); }
-.border-outline-variant { border-color: var(--outline-variant); }
+.bg-primary-fixed {
+  background-color: var(--primary-fixed);
+}
+
+.bg-surface {
+  background-color: var(--surface);
+}
+
+.bg-surface-container {
+  background-color: var(--surface-container);
+}
+
+.bg-surface-container-low {
+  background-color: var(--surface-container-low);
+}
+
+.bg-surface-container-lowest {
+  background-color: var(--surface-container-lowest);
+}
+
+.text-primary {
+  color: var(--primary);
+}
+
+.text-on-primary {
+  color: var(--on-primary);
+}
+
+.text-on-surface {
+  color: var(--on-surface);
+}
+
+.text-on-surface-variant {
+  color: var(--on-surface-variant);
+}
+
+.text-on-primary-fixed {
+  color: var(--on-primary-fixed);
+}
+
+.text-on-primary-fixed-variant {
+  color: var(--on-primary-fixed-variant);
+}
+
+.text-on-tertiary-fixed {
+  color: var(--on-tertiary-fixed);
+}
+
+.border-primary {
+  border-color: var(--primary);
+}
+
+.border-outline-variant {
+  border-color: var(--outline-variant);
+}
 
 /* Font families */
-.font-headline { font-family: 'Plus Jakarta Sans', sans-serif; }
-.font-body { font-family: 'Plus Jakarta Sans', sans-serif; }
-.font-label { font-family: 'Plus Jakarta Sans', sans-serif; }
+.font-headline {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.font-body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.font-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
 
 /* Dark mode support */
 .dark .contact-page {
@@ -126,11 +179,11 @@
     padding-left: 1.5rem;
     padding-right: 1.5rem;
   }
-  
+
   .contact-page .pt-24 {
     padding-top: 4rem;
   }
-  
+
   .contact-page .pb-16 {
     padding-bottom: 3rem;
   }
@@ -138,9 +191,12 @@
 
 /* Animation classes */
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }

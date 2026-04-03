@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { 
-  Bold, 
-  Italic, 
-  Strikethrough, 
-  Code, 
-  Link as LinkIcon, 
-  Image as ImageIcon, 
-  List, 
-  Quote, 
-  Eye, 
-  MoreVertical, 
-  ChevronDown, 
-  UploadCloud, 
+import {
+  Bold,
+  Italic,
+  Strikethrough,
+  Code,
+  Link as LinkIcon,
+  Image as ImageIcon,
+  List,
+  Quote,
+  Eye,
+  MoreVertical,
+  ChevronDown,
+  UploadCloud,
   X,
   PanelRightClose,
   ArrowLeft
@@ -29,7 +29,7 @@ export const ResourceEditor = ({ onClose, initialData }) => {
   const [metaDescription, setMetaDescription] = useState(initialData?.metaDescription || 'A deep dive into clinical architecture of modern distributed data systems and minimalist interface design.');
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -38,7 +38,7 @@ export const ResourceEditor = ({ onClose, initialData }) => {
       {/* Top Action Bar */}
       <header className="h-16 border-b border-outline-variant/20 bg-white flex items-center justify-between px-8 flex-shrink-0">
         <div className="flex items-center gap-6">
-          <button 
+          <button
             onClick={onClose}
             className="p-2 hover:bg-surface-container-high rounded-full transition-colors text-on-surface-variant"
           >
@@ -66,9 +66,9 @@ export const ResourceEditor = ({ onClose, initialData }) => {
             <button className="p-2 text-on-surface-variant hover:text-primary transition-colors">
               <MoreVertical size={20} />
             </button>
-            <img 
-              alt="Admin User" 
-              className="w-8 h-8 rounded-full ml-2 ring-2 ring-primary-fixed/30" 
+            <img
+              alt="Admin User"
+              className="w-8 h-8 rounded-full ml-2 ring-2 ring-primary-fixed/30"
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJuVWKY1W-exKtnFWrhH6Yk_E6ZzEFTvXpzh1aHJNum7dGvQjKoA0Q2yNbmTK2sQrtnMKmAJ7X74TrrAF8yHUss4_uARysaKhXOqthAsEVFsUKCP6-zJmMwjPL4WKXZhZoR9UBcjepZBoOP58OvFTVMOhd6mhz5W47f17fVFtkAJrBUmTvnzUGCnhn-KF5jekhrf6qr8w6O5G_DKlUPruB5r-oyqAf2PV9huLfF1FDYSL-IHT0JQQdjTzsNRGcpFUtuCd_AsSdAtA"
               referrerPolicy="no-referrer"
             />
@@ -102,8 +102,8 @@ export const ResourceEditor = ({ onClose, initialData }) => {
           </div>
           {/* Text Area */}
           <div className="flex-1 p-10 overflow-y-auto custom-scrollbar">
-            <textarea 
-              className="w-full h-full border-none focus:ring-0 resize-none font-body text-lg text-on-surface placeholder:text-neutral-300 leading-relaxed bg-transparent" 
+            <textarea
+              className="w-full h-full border-none focus:ring-0 resize-none font-body text-lg text-on-surface placeholder:text-neutral-300 leading-relaxed bg-transparent"
               placeholder="Start crafting your resource here..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
@@ -123,9 +123,9 @@ export const ResourceEditor = ({ onClose, initialData }) => {
                 {title}
               </h1>
               <div className="flex items-center gap-4 mb-8">
-                <img 
-                  alt="Author Avatar" 
-                  className="w-10 h-10 rounded-full" 
+                <img
+                  alt="Author Avatar"
+                  className="w-10 h-10 rounded-full"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXyLmQWIeeRgu1-Q2TN_4FUDI_UOCUMSIx2h9s3GqYXsAdq-V4wtB2PHT-VQ4n_qypcmV_AshCpjptY6x4goDkyFTjVQeBJ4JVRQdezIx3FBvUJCAk1gcNt86rjo_EULasP2_EaS3JvZZFYv12stdW3ES9IH5rqgpjnF2rEpHvslzncalpv8DBY_Qe0trabgbE5DFdrQKJHu95xBKvMcnwLHSF_Flv3BH336biwQIg0IB96une7Y0NAbv2p7SPFdIlaPFiTLOi588"
                   referrerPolicy="no-referrer"
                 />
@@ -134,9 +134,9 @@ export const ResourceEditor = ({ onClose, initialData }) => {
                   <p className="text-xs text-on-surface-variant">Lead Architect • Oct 24, 2023</p>
                 </div>
               </div>
-              <img 
-                alt="Featured Image" 
-                className="w-full h-64 object-cover rounded-xl mb-10 shadow-sm border border-outline-variant/10" 
+              <img
+                alt="Featured Image"
+                className="w-full h-64 object-cover rounded-xl mb-10 shadow-sm border border-outline-variant/10"
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuA56OsuUBaJYyeohUxLbEQ627Hdhy-QpqC3nRXvEFRpwo5RqG-Og0sGG-Jg3Hpjs7VUUXf-LcPLwzJxxv9lssZeDZAJ3Agh1NN1EGIfhIfC2seQ1ImwuecHdSCqEK8FCr8cPdvQv6Ux7HnjtsBnWjG8vV_4HCZHoz6-X8SyRyceBMsQyocBshBVYy1HIj1-k-WVotBm0X_3jBXIH_8rf4qiEqBb9x1LNSu1BWN8QUQpzPdvEvRK4hpcXyk9aZIJ7jXpbPKbygDuCwQ"
                 referrerPolicy="no-referrer"
               />
@@ -167,14 +167,14 @@ export const ResourceEditor = ({ onClose, initialData }) => {
               <PanelRightClose size={18} />
             </button>
           </div>
-          
+
           <div className="space-y-8">
             {/* Title */}
             <div className="space-y-2">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/70">Document Title</label>
-              <input 
-                className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg p-3 text-sm focus:border-primary focus:ring-2 focus:ring-primary-fixed/30 transition-all outline-none" 
-                type="text" 
+              <input
+                className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg p-3 text-sm focus:border-primary focus:ring-2 focus:ring-primary-fixed/30 transition-all outline-none"
+                type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
@@ -185,13 +185,13 @@ export const ResourceEditor = ({ onClose, initialData }) => {
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/70">Category</label>
               <div className="grid grid-cols-3 gap-2">
                 {['Guide', 'Blog', 'Tool'].map((cat) => (
-                  <button 
+                  <button
                     key={cat}
                     onClick={() => setCategory(cat)}
                     className={cn(
                       "py-2 text-[10px] font-bold uppercase tracking-wider rounded border transition-all",
-                      category === cat 
-                        ? "border-primary text-primary bg-primary-fixed/20" 
+                      category === cat
+                        ? "border-primary text-primary bg-primary-fixed/20"
                         : "border-outline-variant/20 text-on-surface-variant hover:bg-white"
                     )}
                   >
@@ -205,7 +205,7 @@ export const ResourceEditor = ({ onClose, initialData }) => {
             <div className="space-y-2">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/70">Author</label>
               <div className="relative">
-                <select 
+                <select
                   className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg p-3 text-sm appearance-none focus:border-primary outline-none"
                   value={author}
                   onChange={(e) => setAuthor(e.target.value)}
@@ -222,9 +222,9 @@ export const ResourceEditor = ({ onClose, initialData }) => {
             <div className="space-y-2">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/70">Featured Image</label>
               <div className="w-full aspect-video bg-surface-container-lowest border-2 border-dashed border-outline-variant/20 rounded-xl flex flex-col items-center justify-center group cursor-pointer hover:border-primary/50 transition-colors relative overflow-hidden">
-                <img 
-                  alt="Preview thumbnail" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-opacity" 
+                <img
+                  alt="Preview thumbnail"
+                  className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-opacity"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuDp0JNfqrNPUHfPW_yEWHu6ZtpnQUR2ypz2rIXwLYx2nEdKrIjLbpwc8lXK8LdsYV87UNBjkWRO9WrtbldyuRha5XwCnuPeo7XIF8tqgMGoDQGQu2SND_3hy1SgrUZb4ksC_r1qT5IekPxSL5IZ7sNwt9PvKYxGFBK61_8Gwa11mRgsPJ8YLvTx9ZlSNKqeCFZg6rkKStqMnwd4gYyrrZH6QO3yHd0cB6ckqEMcWaHf8K9Tl68PZGkCupjlRT010LdD2RC_YWpXSjI"
                   referrerPolicy="no-referrer"
                 />
@@ -239,8 +239,8 @@ export const ResourceEditor = ({ onClose, initialData }) => {
               <div className="flex flex-wrap gap-2 mb-3">
                 {tags.map((tag) => (
                   <span key={tag} className="flex items-center gap-1 px-2 py-1 bg-surface-container-highest rounded text-[10px] font-bold">
-                    {tag} 
-                    <button 
+                    {tag}
+                    <button
                       onClick={() => setTags(tags.filter(t => t !== tag))}
                       className="hover:text-destructive transition-colors"
                     >
@@ -249,9 +249,9 @@ export const ResourceEditor = ({ onClose, initialData }) => {
                   </span>
                 ))}
               </div>
-              <input 
-                className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg p-2 text-xs focus:border-primary outline-none" 
-                placeholder="Add tag..." 
+              <input
+                className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg p-2 text-xs focus:border-primary outline-none"
+                placeholder="Add tag..."
                 type="text"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
@@ -278,9 +278,9 @@ export const ResourceEditor = ({ onClose, initialData }) => {
                   <label className="text-[9px] font-medium text-on-surface-variant/50 uppercase">URL Slug</label>
                   <div className="flex items-center bg-surface-container-lowest border border-outline-variant/20 rounded p-2 text-[11px]">
                     <span className="text-on-surface-variant/40">/resource/</span>
-                    <input 
-                      className="flex-1 bg-transparent border-none p-0 focus:ring-0 text-[11px] font-medium" 
-                      type="text" 
+                    <input
+                      className="flex-1 bg-transparent border-none p-0 focus:ring-0 text-[11px] font-medium"
+                      type="text"
                       value={slug}
                       onChange={(e) => setSlug(e.target.value)}
                     />
@@ -288,8 +288,8 @@ export const ResourceEditor = ({ onClose, initialData }) => {
                 </div>
                 <div className="space-y-1">
                   <label className="text-[9px] font-medium text-on-surface-variant/50 uppercase">Meta Description</label>
-                  <textarea 
-                    className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded p-2 text-[11px] focus:ring-0 outline-none resize-none" 
+                  <textarea
+                    className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded p-2 text-[11px] focus:ring-0 outline-none resize-none"
                     rows={3}
                     value={metaDescription}
                     onChange={(e) => setMetaDescription(e.target.value)}

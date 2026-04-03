@@ -1,27 +1,27 @@
 import React from 'react';
-import { 
-  ArrowLeft, 
-  Bell, 
-  HelpCircle, 
-  Calendar, 
-  MapPin, 
-  Mail, 
-  Code, 
-  Link as LinkIcon, 
-  CheckCircle, 
-  School, 
-  ChevronDown, 
-  Layers, 
-  Clock, 
-  ShieldCheck, 
-  XCircle 
+import {
+  ArrowLeft,
+  Bell,
+  HelpCircle,
+  Calendar,
+  MapPin,
+  Mail,
+  Code,
+  Link as LinkIcon,
+  CheckCircle,
+  School,
+  ChevronDown,
+  Layers,
+  Clock,
+  ShieldCheck,
+  XCircle
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
 
 export const ApplicationReview = ({ candidate, onClose }) => {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, x: 50 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 50 }}
@@ -30,7 +30,7 @@ export const ApplicationReview = ({ candidate, onClose }) => {
       {/* Top Navigation */}
       <header className="w-full top-0 sticky bg-slate-50 dark:bg-slate-900 flex justify-between items-center px-10 py-4 border-b border-outline-variant/10 z-40">
         <div className="flex items-center gap-4">
-          <button 
+          <button
             onClick={onClose}
             className="text-on-surface-variant hover:text-primary transition-colors"
           >
@@ -50,9 +50,9 @@ export const ApplicationReview = ({ candidate, onClose }) => {
           </div>
           <div className="h-8 w-[1px] bg-slate-200 dark:bg-slate-800"></div>
           <div className="flex items-center space-x-3">
-            <img 
-              alt="User profile" 
-              className="w-8 h-8 rounded-full border border-outline-variant/20 object-cover" 
+            <img
+              alt="User profile"
+              className="w-8 h-8 rounded-full border border-outline-variant/20 object-cover"
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgZNNqNvmwHptyyLAmxKx-aoteaVKSW_bYzTq0_FQ7NzlT5g65GrRRFYvAjW1B4KWIpn9NITLWAZFbBQNyTK__4CAt3Ft2iCdrE7S1-5ZFy5UQmElF_eFXgPvdcHjqQccIwM9sFAXhgjgc5rjBI0ezn7gvunhVDXTxWeL0zVGMPYH5FR5LASQsu80kuMboV7qUVG6vukFsWOUwBHELvJ4AHaOB44W_wUlF7TH-0_EvF9DmQNmHyJnrHPYDGTaiCF3fAkP_2exinOI"
               referrerPolicy="no-referrer"
             />
@@ -82,8 +82,8 @@ export const ApplicationReview = ({ candidate, onClose }) => {
                 </div>
               </div>
             </div>
-            <img 
-              className="w-32 h-32 rounded-xl object-cover glass-border grayscale hover:grayscale-0 transition-all duration-500" 
+            <img
+              className="w-32 h-32 rounded-xl object-cover glass-border grayscale hover:grayscale-0 transition-all duration-500"
               alt={candidate.name}
               src={candidate.avatar || "https://picsum.photos/seed/candidate/200/200"}
               referrerPolicy="no-referrer"
@@ -274,9 +274,9 @@ export const ApplicationReview = ({ candidate, onClose }) => {
             {/* Team Notes */}
             <section className="space-y-4">
               <label className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-on-surface-variant">Internal Team Feedback</label>
-              <textarea 
-                className="w-full bg-surface-container-lowest glass-border p-4 rounded-lg text-sm text-on-surface-variant placeholder:text-outline-variant focus:ring-2 focus:ring-primary focus:outline-none resize-none" 
-                placeholder="Add a private note about this candidate..." 
+              <textarea
+                className="w-full bg-surface-container-lowest glass-border p-4 rounded-lg text-sm text-on-surface-variant placeholder:text-outline-variant focus:ring-2 focus:ring-primary focus:outline-none resize-none"
+                placeholder="Add a private note about this candidate..."
                 rows={4}
               />
             </section>

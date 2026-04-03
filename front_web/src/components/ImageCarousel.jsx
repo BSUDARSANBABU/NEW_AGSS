@@ -32,7 +32,7 @@ export const ImageCarousel = ({ images, alt, className = '' }) => {
 
   const goToPrevious = () => {
     setIsAutoPlaying(false);
-    setCurrentIndex((prevIndex) => 
+    setCurrentIndex((prevIndex) =>
       prevIndex === 0 ? images.length - 1 : prevIndex - 1
     );
   };
@@ -58,10 +58,11 @@ export const ImageCarousel = ({ images, alt, className = '' }) => {
   };
 
   return (
-    <div 
+    <div
       className={`relative w-full h-full overflow-hidden group ${className}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      style={{ minHeight: '100%' }}
     >
       {/* Main Image */}
       <img
@@ -98,11 +99,10 @@ export const ImageCarousel = ({ images, alt, className = '' }) => {
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === currentIndex 
-                  ? 'bg-white w-8' 
-                  : 'bg-white/50 hover:bg-white/75'
-              }`}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${index === currentIndex
+                ? 'bg-white w-8'
+                : 'bg-white/50 hover:bg-white/75'
+                }`}
               aria-label={`Go to image ${index + 1}`}
             />
           ))}
