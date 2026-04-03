@@ -1,0 +1,131 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --color-primary: #00606b;
+  --color-on-primary: #ffffff;
+  --color-primary-fixed: #a2effd;
+  --color-on-primary-fixed: #001f24;
+  --color-secondary: #4a6267;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #cde7ed;
+  --color-on-secondary-container: #50686d;
+  --color-tertiary: #4b5675;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #636e8f;
+  --color-on-tertiary-container: #f1f2ff;
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+  --color-outline: #6e797b;
+  --color-outline-variant: #bdc8cb;
+  --color-surface: #f9f9f9;
+  --color-on-surface: #1a1c1c;
+  --color-surface-variant: #e2e2e2;
+  --color-on-surface-variant: #3e494b;
+  --color-surface-container: #eeeeee;
+  --color-surface-container-low: #f3f3f4;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-high: #e8e8e8;
+  --color-surface-container-highest: #e2e2e2;
+
+  /* Zinc colors for admin components */
+  --color-zinc-50: #fafafa;
+  --color-zinc-100: #f4f4f5;
+  --color-zinc-200: #e4e4e7;
+  --color-zinc-300: #d4d4d8;
+  --color-zinc-400: #a1a1aa;
+  --color-zinc-500: #71717a;
+  --color-zinc-600: #52525b;
+  --color-zinc-700: #3f3f46;
+  --color-zinc-800: #27272a;
+  --color-zinc-900: #18181b;
+  --color-zinc-950: #09090b;
+
+  /* Additional colors for admin */
+  --color-black: #000000;
+  --color-white: #ffffff;
+  --color-blue-500: #3b82f6;
+  --color-blue-600: #2563eb;
+  --color-blue-700: #1d4ed8;
+  --color-green-500: #22c55e;
+  --color-green-600: #16a34a;
+  --color-red-500: #ef4444;
+  --color-red-600: #dc2626;
+  --color-yellow-500: #eab308;
+  --color-sky-500: #0ea5e9;
+  --color-pink-600: #db2777;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+}
+
+@layer base {
+  body {
+    @apply font-sans bg-surface text-on-surface;
+  }
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom CSS Classes */
+.glass-card {
+  @apply bg-white/10 backdrop-blur-md border border-white/20;
+}
+
+.accent-gradient {
+  background: linear-gradient(135deg, #00606b 0%, #00838f 50%, #0097a7 100%);
+}
+
+.serif {
+  font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Hide scrollbar while maintaining scroll functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+  /* Safari and Chrome */
+}
