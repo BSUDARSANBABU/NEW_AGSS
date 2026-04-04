@@ -1,15 +1,24 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSidebar } from './SidebarContext';
+import { useAuth } from '../context/AuthContext';
 
 const AdminSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { isCollapsed, toggleSidebar } = useSidebar();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
-    // In a real app, you would clear session/token here
-    navigate('/');
+    // Clear authentication
+    logout();
+
+    // Prevent back navigation by replacing history
+    window.history.replaceState(null, '', '/');
+    window.history.pushState(null, '', '/');
+
+    // Navigate to home page with replace to prevent back navigation
+    navigate('/', { replace: true });
   };
 
   const mainNavItems = [

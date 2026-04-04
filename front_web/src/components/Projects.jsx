@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, ArrowRight, PlusCircle, ChevronDown, Eye } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowRight, PlusCircle, ChevronDown, Eye, Star } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { PublicLayout } from './PublicLayout';
 import apiService from '../services/api';
 import { ImageCarousel } from './ImageCarousel';
 import { ProjectDetails } from './ProjectDetails';
+import { useNavigate } from 'react-router-dom';
+import { useCustomerAuth } from '../context/CustomerAuthContext';
 
 const DiscoveryFilters = ({
   categories,
@@ -143,6 +145,8 @@ export const Projects = () => {
   const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(6);
+  const navigate = useNavigate();
+  const { isAuthenticated } = useCustomerAuth();
 
   // Project details modal state
   const [selectedProject, setSelectedProject] = useState(null);
@@ -295,6 +299,20 @@ export const Projects = () => {
 
   // Handle project details modal
   const handleProjectClick = (project) => {
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      // Redirect to signup page with a return URL
+      navigate('/signup', {
+        state: {
+          message: 'Please sign up to view project details',
+          returnUrl: '/projects',
+          action: 'view_project',
+          projectId: project.id
+        }
+      });
+      return;
+    }
+
     // Get all images for this project from projectImages state
     const projectAllImages = projectImages[project.id] || [project.project_image || project.image || 'https://via.placeholder.com/800x400'];
 
@@ -319,6 +337,33 @@ export const Projects = () => {
 
   const closeProjectDetails = () => {
     setSelectedProject(null);
+  };
+
+  // Handle review button click
+  const handleReviewClick = (project) => {
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      // Redirect to signup page with a return URL
+      navigate('/signup', {
+        state: {
+          message: 'Please sign up to add reviews',
+          returnUrl: '/projects',
+          action: 'add_review',
+          projectId: project.id
+        }
+      });
+      return;
+    }
+
+    navigate('/reviews', {
+      state: {
+        projectData: {
+          id: project.id,
+          title: project.title,
+          name: project.title
+        }
+      }
+    });
   };
 
   if (loading) {
@@ -499,7 +544,7 @@ export const Projects = () => {
                     <span className="text-[10px] font-mono text-on-surface-variant opacity-50">#{project.id}</span>
                   </div>
                   <p className="text-sm text-on-surface-variant leading-relaxed mb-8 h-10 line-clamp-2">{project.description || project.desc}</p>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-4">
                     <div className="flex -space-x-2">
                       {(project.project_developers || project.team || []).map((dev, i) => (
                         <div
@@ -514,6 +559,15 @@ export const Projects = () => {
                     >
                       View Project
                       <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-center">
+                    <button
+                      onClick={() => handleReviewClick(project)}
+                      className="flex items-center gap-2 px-6 py-2.5 w-full bg-surface-container-high text-on-surface rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-surface-container-highest transition-all scale-[0.98] active:scale-[0.95]"
+                    >
+                      <Star className="w-4 h-4" />
+                      Add Review
                     </button>
                   </div>
                 </div>

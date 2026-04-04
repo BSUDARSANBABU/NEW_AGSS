@@ -22,7 +22,11 @@ from .views import (
     SiteSettingsViewSet,
     InterviewProcessViewSet,
     reset_customer_password,
-    FooterViewSet
+    FooterViewSet,
+    AdminLoginView,
+    AdminRefreshTokenView,
+    AdminChangePasswordView,
+    AdminLogoutView
 )
 
 router = DefaultRouter()
@@ -50,4 +54,10 @@ urlpatterns = [
     path("customer/login/", CustomerLoginView.as_view()),
     path("send-otp/", send_otp),
     path("reset-customer-password/", reset_customer_password),
+    
+    # Admin Authentication URLs
+    path("admin/login/", AdminLoginView.as_view(), name="admin_login"),
+    path("admin/refresh-token/", AdminRefreshTokenView.as_view(), name="admin_refresh_token"),
+    path("admin/change-password/", AdminChangePasswordView.as_view(), name="admin_change_password"),
+    path("admin/logout/", AdminLogoutView.as_view(), name="admin_logout"),
 ]

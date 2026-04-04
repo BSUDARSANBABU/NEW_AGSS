@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import AdminLayout from './AdminLayout';
 import { apiService } from '../services/api';
 
@@ -40,10 +40,13 @@ const AdminDemos = () => {
 
         setRecentDemos(demosData.slice(0, 5).map(demo => ({
           id: demo.id,
-          name: demo.name || demo.client_name || 'Unknown',
-          company: demo.company || 'N/A',
+          name: demo.name,
+          email: demo.email,
+          phone: demo.phone,
+          preferred_date: demo.preferred_date,
+          project_type: demo.project_type,
+          message: demo.message,
           created_at: demo.created_at,
-          scheduled_date: demo.scheduled_date,
           status: demo.status || 'pending'
         })));
 
@@ -194,7 +197,16 @@ const AdminDemos = () => {
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <p className="font-bold text-slate-900 dark:text-white">{demo.name}</p>
-                        <p className="text-sm text-slate-600 dark:text-slate-400">{demo.company}</p>
+                        <p className="text-sm text-slate-600 dark:text-slate-400">{demo.email}</p>
+                        <p className="text-sm text-slate-600 dark:text-slate-400">{demo.phone}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                          Project: {demo.project_type} | Date: {demo.preferred_date ? new Date(demo.preferred_date).toLocaleDateString() : 'Not specified'}
+                        </p>
+                        {demo.message && (
+                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                            Message: {demo.message}
+                          </p>
+                        )}
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                           Created: {new Date(demo.created_at).toLocaleDateString()}
                         </p>

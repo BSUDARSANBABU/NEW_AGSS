@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { X, ExternalLink, Clock, Database, Globe, Cpu, ShieldCheck, Activity, Users, Code, Calendar, Award, MapPin, Github, Terminal } from 'lucide-react';
 import { cn } from '../lib/utils';
 

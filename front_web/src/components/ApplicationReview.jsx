@@ -16,7 +16,7 @@ import {
   ShieldCheck,
   XCircle
 } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { cn } from '../lib/utils';
 
 export const ApplicationReview = ({ candidate, onClose }) => {

@@ -11,7 +11,23 @@ const AdminSettings = () => {
     favicon: '',
     mainHeading: 'Welcome to Our Platform',
     subHeading: 'Building amazing digital experiences',
-    projectDisplayName: 'Portfolio Projects'
+    projectDisplayName: 'Portfolio Projects',
+    heroHeading: 'ENGINEERED PRECISION. ISOFORM PRIME.',
+    heroSubheading: 'Architecting the future of high-frequency deployments with surgical accuracy and clinical performance metrics.',
+    heroImage: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBrXEeYK7RxE0S_zQDdZb31pqpsxaASgmUhbPl_WRSo2SwfxzLQJgqTD7qbudBERjnNEbk9mHPByY8JfIJxLAK8_ksMB84SflWIS2DUxCeEBL_QkYyp_sna5QRFdbFHdv3ly4yezaWwV91RLMUyocrJm66GXd5coklbKERUkmfl7y_JBmiEVQ71bO0RILvYUmsKRtJWPXTD9z6SyonIbjSdKIVz_zp0tNfLdK8ocY8CeqDZTJLRsUdlkqgrCTaluQSQu2uKAz62p80',
+    heroButton1Text: 'Initiate Deployment',
+    heroButton1Url: '/admin',
+    heroButton1IsPrimary: true,
+    heroButton2Text: 'View Technical Specs',
+    heroButton2Url: '#',
+    heroButton2IsPrimary: false,
+    // Hero Styling Settings
+    heroHeadingFontFamily: 'Inter, sans-serif',
+    heroHeadingFontSize: '4rem',
+    heroSubheadingFontFamily: 'Inter, sans-serif',
+    heroSubheadingFontSize: '1.125rem',
+    heroImageWidth: '100%',
+    heroImageHeight: 'auto'
   });
   const [navbarLinks, setNavbarLinks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,6 +35,8 @@ const AdminSettings = () => {
   const [activeTab, setActiveTab] = useState('branding');
   const [logoFile, setLogoFile] = useState(null);
   const [logoPreview, setLogoPreview] = useState('');
+  const [heroImageFile, setHeroImageFile] = useState(null);
+  const [heroImagePreview, setHeroImagePreview] = useState('');
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
   const [editingLink, setEditingLink] = useState(null);
   const [linkFormData, setLinkFormData] = useState({
@@ -84,11 +102,33 @@ const AdminSettings = () => {
       // Map frontend field names to backend field names
       formData.append('heading', siteSettings.devforgeText);
       formData.append('subheading', siteSettings.subHeading);
+      formData.append('hero_heading', siteSettings.heroHeading);
+      formData.append('hero_subheading', siteSettings.heroSubheading);
+      formData.append('hero_button1_text', siteSettings.heroButton1Text);
+      formData.append('hero_button1_url', siteSettings.heroButton1Url);
+      formData.append('hero_button1_is_primary', siteSettings.heroButton1IsPrimary);
+      formData.append('hero_button2_text', siteSettings.heroButton2Text);
+      formData.append('hero_button2_url', siteSettings.heroButton2Url);
+      formData.append('hero_button2_is_primary', siteSettings.heroButton2IsPrimary);
+
+      // Hero Styling Settings
+      formData.append('hero_heading_font_family', siteSettings.heroHeadingFontFamily);
+      formData.append('hero_heading_font_size', siteSettings.heroHeadingFontSize);
+      formData.append('hero_subheading_font_family', siteSettings.heroSubheadingFontFamily);
+      formData.append('hero_subheading_font_size', siteSettings.heroSubheadingFontSize);
+      formData.append('hero_image_width', siteSettings.heroImageWidth);
+      formData.append('hero_image_height', siteSettings.heroImageHeight);
 
       if (logoFile) {
         formData.append('logo', logoFile);
       } else if (siteSettings.logo && siteSettings.logo.startsWith('http')) {
         // If it's a URL, don't send it (keep existing logo)
+      }
+
+      if (heroImageFile) {
+        formData.append('hero_image', heroImageFile);
+      } else if (siteSettings.heroImage && siteSettings.heroImage.startsWith('http')) {
+        // If it's a URL, don't send it (keep existing hero image)
       }
 
       await apiService.updateSiteSettings(formData);
@@ -115,6 +155,24 @@ const AdminSettings = () => {
     setSiteSettings({ ...siteSettings, logo: value });
     setLogoPreview(value);
     setLogoFile(null);
+  };
+
+  const handleHeroImageFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setHeroImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setHeroImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleHeroImageUrlChange = (value) => {
+    setSiteSettings({ ...siteSettings, heroImage: value });
+    setHeroImagePreview(value);
+    setHeroImageFile(null);
   };
 
   const handleAddLink = () => {
@@ -229,9 +287,26 @@ const AdminSettings = () => {
             favicon: data.favicon || '',
             mainHeading: data.main_heading || 'Welcome to Our Platform',
             subHeading: data.subheading || 'Building amazing digital experiences',
-            projectDisplayName: data.project_display_name || 'Portfolio Projects'
+            projectDisplayName: data.project_display_name || 'Portfolio Projects',
+            heroHeading: data.hero_heading || 'ENGINEERED PRECISION. ISOFORM PRIME.',
+            heroSubheading: data.hero_subheading || 'Architecting the future of high-frequency deployments with surgical accuracy and clinical performance metrics.',
+            heroImage: data.hero_image || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBrXEeYK7RxE0S_zQDdZb31pqpsxaASgmUhbPl_WRSo2SwfxzLQJgqTD7qbudBERjnNEbk9mHPByY8JfIJxLAK8_ksMB84SflWIS2DUxCeEBL_QkYyp_sna5QRFdbFHdv3ly4yezaWwV91RLMUyocrJm66GXd5coklbKERUkmfl7y_JBmiEVQ71bO0RILvYUmsKRtJWPXTD9z6SyonIbjSdKIVz_zp0tNfLdK8ocY8CeqDZTJLRsUdlkqgrCTaluQSQu2uKAz62p80',
+            heroButton1Text: data.hero_button1_text || 'Initiate Deployment',
+            heroButton1Url: data.hero_button1_url || '/admin',
+            heroButton1IsPrimary: data.hero_button1_is_primary !== undefined ? data.hero_button1_is_primary : true,
+            heroButton2Text: data.hero_button2_text || 'View Technical Specs',
+            heroButton2Url: data.hero_button2_url || '#',
+            heroButton2IsPrimary: data.hero_button2_is_primary !== undefined ? data.hero_button2_is_primary : false,
+            // Hero Styling Settings
+            heroHeadingFontFamily: data.hero_heading_font_family || 'Inter, sans-serif',
+            heroHeadingFontSize: data.hero_heading_font_size || '4rem',
+            heroSubheadingFontFamily: data.hero_subheading_font_family || 'Inter, sans-serif',
+            heroSubheadingFontSize: data.hero_subheading_font_size || '1.125rem',
+            heroImageWidth: data.hero_image_width || '100%',
+            heroImageHeight: data.hero_image_height || 'auto'
           });
           setLogoPreview(data.logo || '');
+          setHeroImagePreview(data.hero_image || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBrXEeYK7RxE0S_zQDdZb31pqpsxaASgmUhbPl_WRSo2SwfxzLQJgqTD7qbudBERjnNEbk9mHPByY8JfIJxLAK8_ksMB84SflWIS2DUxCeEBL_QkYyp_sna5QRFdbFHdv3ly4yezaWwV91RLMUyocrJm66GXd5coklbKERUkmfl7y_JBmiEVQ71bO0RILvYUmsKRtJWPXTD9z6SyonIbjSdKIVz_zp0tNfLdK8ocY8CeqDZTJLRsUdlkqgrCTaluQSQu2uKAz62p80');
         }
 
         // Set default navbar links since endpoint doesn't exist yet
@@ -239,7 +314,12 @@ const AdminSettings = () => {
           { id: 1, title: 'Home', url: '/', order: 0, is_active: true, open_in_new_tab: false },
           { id: 2, title: 'Projects', url: '/projects', order: 1, is_active: true, open_in_new_tab: false },
           { id: 3, title: 'Developers', url: '/developers', order: 2, is_active: true, open_in_new_tab: false },
-          { id: 4, title: 'Hiring', url: '/hiring', order: 3, is_active: true, open_in_new_tab: false }
+          { id: 4, title: 'Resources', url: '/resources', order: 3, is_active: true, open_in_new_tab: false },
+          { id: 5, title: 'Reviews', url: '/reviews', order: 4, is_active: true, open_in_new_tab: false },
+          { id: 6, title: 'Contact', url: '/contact', order: 5, is_active: true, open_in_new_tab: false },
+          { id: 7, title: 'Hiring', url: '/hiring', order: 6, is_active: true, open_in_new_tab: false },
+          { id: 8, title: 'Book Demo', url: '/book-demo', order: 7, is_active: true, open_in_new_tab: false },
+          { id: 9, title: 'Sign Up', url: '/signup', order: 8, is_active: true, open_in_new_tab: false }
         ]);
 
       } catch (error) {
@@ -249,7 +329,12 @@ const AdminSettings = () => {
           { id: 1, title: 'Home', url: '/', order: 0, is_active: true, open_in_new_tab: false },
           { id: 2, title: 'Projects', url: '/projects', order: 1, is_active: true, open_in_new_tab: false },
           { id: 3, title: 'Developers', url: '/developers', order: 2, is_active: true, open_in_new_tab: false },
-          { id: 4, title: 'Hiring', url: '/hiring', order: 3, is_active: true, open_in_new_tab: false }
+          { id: 4, title: 'Resources', url: '/resources', order: 3, is_active: true, open_in_new_tab: false },
+          { id: 5, title: 'Reviews', url: '/reviews', order: 4, is_active: true, open_in_new_tab: false },
+          { id: 6, title: 'Contact', url: '/contact', order: 5, is_active: true, open_in_new_tab: false },
+          { id: 7, title: 'Hiring', url: '/hiring', order: 6, is_active: true, open_in_new_tab: false },
+          { id: 8, title: 'Book Demo', url: '/book-demo', order: 7, is_active: true, open_in_new_tab: false },
+          { id: 9, title: 'Sign Up', url: '/signup', order: 8, is_active: true, open_in_new_tab: false }
         ]);
       } finally {
         setLoading(false);
@@ -261,6 +346,7 @@ const AdminSettings = () => {
 
   const tabs = [
     { id: 'branding', label: 'Branding' },
+    { id: 'hero', label: 'Hero Section' },
     { id: 'navbar', label: 'Navbar' }
   ];
 
@@ -527,6 +613,357 @@ const AdminSettings = () => {
                 className="w-full py-3 bg-primary text-white rounded-xl font-bold hover:opacity-90 transition-all"
               >
                 Save Branding Settings
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Hero Section Settings */}
+        {activeTab === 'hero' && (
+          <div className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800">
+            <div className="bg-slate-50 dark:bg-slate-800 px-8 py-4 border-b border-slate-200 dark:border-slate-800">
+              <div className="flex items-center gap-3">
+                <span className="material-symbols-outlined text-primary">home</span>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Hero Section</h2>
+              </div>
+            </div>
+            <div className="p-8 space-y-8">
+              {/* Hero Heading */}
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block mb-2">Hero Heading</label>
+                <textarea
+                  value={siteSettings.heroHeading}
+                  onChange={(e) => setSiteSettings({ ...siteSettings, heroHeading: e.target.value })}
+                  className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border-none focus:ring-2 focus:ring-primary/20 outline-none resize-none"
+                  rows={3}
+                  placeholder="ENGINEERED PRECISION. ISOFORM PRIME."
+                />
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Main heading displayed in the hero section. You can use line breaks for multi-line text.</p>
+              </div>
+
+              {/* Hero Subheading */}
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block mb-2">Hero Subheading</label>
+                <textarea
+                  value={siteSettings.heroSubheading}
+                  onChange={(e) => setSiteSettings({ ...siteSettings, heroSubheading: e.target.value })}
+                  className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border-none focus:ring-2 focus:ring-primary/20 outline-none resize-none"
+                  rows={3}
+                  placeholder="Architecting the future of high-frequency deployments with surgical accuracy and clinical performance metrics."
+                />
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Descriptive text that appears below the main heading.</p>
+              </div>
+
+              {/* Hero Image */}
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block mb-3">Hero Right Side Image</label>
+
+                {/* Hero Image Preview */}
+                {heroImagePreview && (
+                  <div className="relative w-full max-w-md h-48 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 mb-4">
+                    <img
+                      src={heroImagePreview}
+                      alt="Hero image preview"
+                      className="w-full h-full object-cover bg-slate-100 dark:bg-slate-800"
+                      onError={(e) => {
+                        e.target.src = 'https://via.placeholder.com/400x200/f3f4f6/1f2937?text=HERO+IMAGE';
+                      }}
+                    />
+                  </div>
+                )}
+
+                {/* Hero Image Upload Options */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="flex items-center gap-2 px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-all text-sm text-slate-700 dark:text-slate-300">
+                      <span className="material-symbols-outlined text-sm">upload</span>
+                      <span>Upload Hero Image</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleHeroImageFileChange}
+                        className="hidden"
+                      />
+                    </label>
+                    {heroImageFile && (
+                      <p className="text-xs text-green-600 dark:text-green-400 font-medium mt-2">
+                        Selected: {heroImageFile.name}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <input
+                      type="text"
+                      value={siteSettings.heroImage}
+                      onChange={(e) => handleHeroImageUrlChange(e.target.value)}
+                      placeholder="Or enter hero image URL..."
+                      className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white placeholder:text-slate-500 focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Recommended size: 800x600px. This image appears on the right side of the hero section.</p>
+              </div>
+
+              {/* Hero Buttons */}
+              <div className="space-y-6">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Hero Section Buttons</h3>
+
+                {/* Button 1 */}
+                <div className="p-6 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="font-bold text-slate-900 dark:text-white">Primary Button</h4>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={siteSettings.heroButton1IsPrimary}
+                        onChange={(e) => setSiteSettings({ ...siteSettings, heroButton1IsPrimary: e.target.checked })}
+                        className="w-4 h-4 text-primary rounded focus:ring-primary"
+                      />
+                      <span className="text-sm text-slate-600 dark:text-slate-400">Make this primary</span>
+                    </label>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block mb-2">Button Text</label>
+                      <input
+                        type="text"
+                        value={siteSettings.heroButton1Text}
+                        onChange={(e) => setSiteSettings({ ...siteSettings, heroButton1Text: e.target.value })}
+                        className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border-none focus:ring-2 focus:ring-primary/20 outline-none"
+                        placeholder="Initiate Deployment"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block mb-2">Button URL</label>
+                      <input
+                        type="text"
+                        value={siteSettings.heroButton1Url}
+                        onChange={(e) => setSiteSettings({ ...siteSettings, heroButton1Url: e.target.value })}
+                        className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border-none focus:ring-2 focus:ring-primary/20 outline-none"
+                        placeholder="/admin"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Button 2 */}
+                <div className="p-6 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="font-bold text-slate-900 dark:text-white">Secondary Button</h4>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={siteSettings.heroButton2IsPrimary}
+                        onChange={(e) => setSiteSettings({ ...siteSettings, heroButton2IsPrimary: e.target.checked })}
+                        className="w-4 h-4 text-primary rounded focus:ring-primary"
+                      />
+                      <span className="text-sm text-slate-600 dark:text-slate-400">Make this primary</span>
+                    </label>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block mb-2">Button Text</label>
+                      <input
+                        type="text"
+                        value={siteSettings.heroButton2Text}
+                        onChange={(e) => setSiteSettings({ ...siteSettings, heroButton2Text: e.target.value })}
+                        className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border-none focus:ring-2 focus:ring-primary/20 outline-none"
+                        placeholder="View Technical Specs"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block mb-2">Button URL</label>
+                      <input
+                        type="text"
+                        value={siteSettings.heroButton2Url}
+                        onChange={(e) => setSiteSettings({ ...siteSettings, heroButton2Url: e.target.value })}
+                        className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border-none focus:ring-2 focus:ring-primary/20 outline-none"
+                        placeholder="#"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Hero Styling Settings */}
+              <div className="space-y-6">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Hero Section Styling</h3>
+
+                {/* Heading Typography */}
+                <div className="p-6 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
+                  <h4 className="font-bold text-slate-900 dark:text-white mb-4">Heading Typography</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block mb-2">Font Family</label>
+                      <select
+                        value={siteSettings.heroHeadingFontFamily}
+                        onChange={(e) => setSiteSettings({ ...siteSettings, heroHeadingFontFamily: e.target.value })}
+                        className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border-none focus:ring-2 focus:ring-primary/20 outline-none"
+                      >
+                        <option value="Inter, sans-serif">Inter (Default)</option>
+                        <option value="Arial, sans-serif">Arial</option>
+                        <option value="Helvetica, sans-serif">Helvetica</option>
+                        <option value="Georgia, serif">Georgia</option>
+                        <option value="'Times New Roman', serif">Times New Roman</option>
+                        <option value="'Courier New', monospace">Courier New</option>
+                        <option value="Verdana, sans-serif">Verdana</option>
+                        <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                        <option value="system-ui, sans-serif">System UI</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block mb-2">Font Size</label>
+                      <input
+                        type="text"
+                        value={siteSettings.heroHeadingFontSize}
+                        onChange={(e) => setSiteSettings({ ...siteSettings, heroHeadingFontSize: e.target.value })}
+                        className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border-none focus:ring-2 focus:ring-primary/20 outline-none"
+                        placeholder="4rem"
+                      />
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Use CSS units like rem, px, em (e.g., 4rem, 64px)</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Subheading Typography */}
+                <div className="p-6 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
+                  <h4 className="font-bold text-slate-900 dark:text-white mb-4">Subheading Typography</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block mb-2">Font Family</label>
+                      <select
+                        value={siteSettings.heroSubheadingFontFamily}
+                        onChange={(e) => setSiteSettings({ ...siteSettings, heroSubheadingFontFamily: e.target.value })}
+                        className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border-none focus:ring-2 focus:ring-primary/20 outline-none"
+                      >
+                        <option value="Inter, sans-serif">Inter (Default)</option>
+                        <option value="Arial, sans-serif">Arial</option>
+                        <option value="Helvetica, sans-serif">Helvetica</option>
+                        <option value="Georgia, serif">Georgia</option>
+                        <option value="'Times New Roman', serif">Times New Roman</option>
+                        <option value="'Courier New', monospace">Courier New</option>
+                        <option value="Verdana, sans-serif">Verdana</option>
+                        <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                        <option value="system-ui, sans-serif">System UI</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block mb-2">Font Size</label>
+                      <input
+                        type="text"
+                        value={siteSettings.heroSubheadingFontSize}
+                        onChange={(e) => setSiteSettings({ ...siteSettings, heroSubheadingFontSize: e.target.value })}
+                        className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border-none focus:ring-2 focus:ring-primary/20 outline-none"
+                        placeholder="1.125rem"
+                      />
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Use CSS units like rem, px, em (e.g., 1.125rem, 18px)</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Image Sizing */}
+                <div className="p-6 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
+                  <h4 className="font-bold text-slate-900 dark:text-white mb-4">Hero Image Sizing</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block mb-2">Image Width</label>
+                      <input
+                        type="text"
+                        value={siteSettings.heroImageWidth}
+                        onChange={(e) => setSiteSettings({ ...siteSettings, heroImageWidth: e.target.value })}
+                        className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border-none focus:ring-2 focus:ring-primary/20 outline-none"
+                        placeholder="100%"
+                      />
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Use CSS units like %, px, rem (e.g., 100%, 500px)</p>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block mb-2">Image Height</label>
+                      <input
+                        type="text"
+                        value={siteSettings.heroImageHeight}
+                        onChange={(e) => setSiteSettings({ ...siteSettings, heroImageHeight: e.target.value })}
+                        className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border-none focus:ring-2 focus:ring-primary/20 outline-none"
+                        placeholder="auto"
+                      />
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Use CSS units like auto, px, rem (e.g., auto, 400px)</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Live Preview */}
+              <div className="p-6 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
+                <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-3">Live Preview</h4>
+                <div className="grid md:grid-cols-2 gap-8 items-center">
+                  <div>
+                    <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-2 leading-tight">
+                      {siteSettings.heroHeading.split('\n').map((line, i) => (
+                        <span key={i}>
+                          {line}
+                          {i < siteSettings.heroHeading.split('\n').length - 1 && <br />}
+                        </span>
+                      ))}
+                    </h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+                      {siteSettings.heroSubheading}
+                    </p>
+
+                    {/* Button Preview */}
+                    <div className="flex flex-wrap gap-3">
+                      {(siteSettings.heroButton1IsPrimary || !siteSettings.heroButton2IsPrimary) && siteSettings.heroButton1Text && (
+                        <div className="px-6 py-3 bg-primary text-white text-sm font-bold rounded-full">
+                          {siteSettings.heroButton1Text}
+                        </div>
+                      )}
+                      {siteSettings.heroButton2IsPrimary && siteSettings.heroButton2Text && (
+                        <div className="px-6 py-3 bg-primary text-white text-sm font-bold rounded-full">
+                          {siteSettings.heroButton2Text}
+                        </div>
+                      )}
+                      {!siteSettings.heroButton1IsPrimary && siteSettings.heroButton2IsPrimary && siteSettings.heroButton1Text && (
+                        <div className="px-6 py-3 bg-surface-container-high text-slate-900 dark:text-white text-sm font-bold rounded-full">
+                          {siteSettings.heroButton1Text}
+                        </div>
+                      )}
+                      {siteSettings.heroButton1IsPrimary && !siteSettings.heroButton2IsPrimary && siteSettings.heroButton2Text && (
+                        <div className="px-6 py-3 bg-surface-container-high text-slate-900 dark:text-white text-sm font-bold rounded-full">
+                          {siteSettings.heroButton2Text}
+                        </div>
+                      )}
+                      {!siteSettings.heroButton1IsPrimary && !siteSettings.heroButton2IsPrimary && siteSettings.heroButton1Text && (
+                        <div className="px-6 py-3 bg-surface-container-high text-slate-900 dark:text-white text-sm font-bold rounded-full">
+                          {siteSettings.heroButton1Text}
+                        </div>
+                      )}
+                      {!siteSettings.heroButton1IsPrimary && !siteSettings.heroButton2IsPrimary && siteSettings.heroButton2Text && (
+                        <div className="px-6 py-3 bg-surface-container-high text-slate-900 dark:text-white text-sm font-bold rounded-full">
+                          {siteSettings.heroButton2Text}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {heroImagePreview && (
+                    <div className="aspect-video rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
+                      <img
+                        src={heroImagePreview}
+                        alt="Hero preview"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-4">This is how your hero section will appear on the home page.</p>
+              </div>
+
+              <button
+                onClick={handleSaveSiteSettings}
+                className="w-full py-3 bg-primary text-white rounded-xl font-bold hover:opacity-90 transition-all"
+              >
+                Save Hero Settings
               </button>
             </div>
           </div>

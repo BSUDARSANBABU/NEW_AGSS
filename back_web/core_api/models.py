@@ -388,9 +388,35 @@ class Documentation(models.Model):
 # models.py
 
 class SiteSettings(models.Model):
-    logo = models.ImageField(upload_to="site/")
-    heading = models.CharField(max_length=200)
-    subheading = models.TextField()
+    logo = models.ImageField(upload_to="site/", blank=True, null=True)
+    heading = models.CharField(max_length=200, blank=True)
+    subheading = models.TextField(blank=True)
+    hero_heading = models.TextField(blank=True, help_text="Main heading for hero section")
+    hero_subheading = models.TextField(blank=True, help_text="Subheading for hero section")
+    hero_image = models.ImageField(upload_to="site/hero/", blank=True, null=True, help_text="Right side image for hero section")
+    
+    # Hero Buttons
+    hero_button1_text = models.CharField(max_length=100, blank=True, default="Initiate Deployment")
+    hero_button1_url = models.CharField(max_length=200, blank=True, default="/admin")
+    hero_button1_is_primary = models.BooleanField(default=True, help_text="Make this the primary button")
+    
+    hero_button2_text = models.CharField(max_length=100, blank=True, default="View Technical Specs")
+    hero_button2_url = models.CharField(max_length=200, blank=True, default="#")
+    hero_button2_is_primary = models.BooleanField(default=False, help_text="Make this the primary button")
+    
+    # Hero Styling Settings
+    hero_heading_font_family = models.CharField(max_length=100, blank=True, default="Inter, sans-serif", help_text="Font family for hero heading")
+    hero_heading_font_size = models.CharField(max_length=20, blank=True, default="4rem", help_text="Font size for hero heading (e.g., 4rem, 64px)")
+    hero_subheading_font_family = models.CharField(max_length=100, blank=True, default="Inter, sans-serif", help_text="Font family for hero subheading")
+    hero_subheading_font_size = models.CharField(max_length=20, blank=True, default="1.125rem", help_text="Font size for hero subheading (e.g., 1.125rem, 18px)")
+    hero_image_width = models.CharField(max_length=20, blank=True, default="100%", help_text="Width for hero image (e.g., 100%, 500px)")
+    hero_image_height = models.CharField(max_length=20, blank=True, default="auto", help_text="Height for hero image (e.g., auto, 400px)")
+    
+    site_name = models.CharField(max_length=200, blank=True, default="AI Developer Platform")
+    before_logo = models.CharField(max_length=200, blank=True, default="Innovate • Build • Deploy")
+    favicon = models.URLField(blank=True, null=True)
+    main_heading = models.CharField(max_length=200, blank=True, default="Welcome to Our Platform")
+    project_display_name = models.CharField(max_length=200, blank=True, default="Portfolio Projects")
 
     def __str__(self):
         return "Site Settings"

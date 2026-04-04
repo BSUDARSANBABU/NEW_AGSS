@@ -1,184 +1,296 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
+import { Mail, Lock, ArrowRight, Eye, EyeOff, AlertCircle, Loader2, Chrome } from 'lucide-react';
+import { useCustomerAuth } from '../context/CustomerAuthContext';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { ForgotPassword } from './ForgotPassword';
+import { Header } from './Header';
+import { initializeGoogleSignIn, renderGoogleButton, handleGoogleSignInSuccess, handleGoogleSignInError, cleanupGoogleSignIn } from '../services/googleAuth';
+import { GOOGLE_OAUTH } from '../config/api';
 
-export const SignIn = ({ onToggleSignUp, onForgotPassword }) => {
+const SignIn = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [googleError, setGoogleError] = useState(null);
+
+  const { customerLogin, loading, error } = useCustomerAuth();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-  const [isLoading, setIsLoading] = useState(false);
+  const location = useLocation();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  // Get redirect state from navigation
+  const redirectState = location.state || {};
+  const { message, returnUrl, action } = redirectState;
+
+  // Refs to prevent multiple initializations
+  const googleInitializedRef = useRef(false);
+  const clientIdRef = useRef(null);
+
+  // Initialize Google Sign-In
+  useEffect(() => {
+    if (!showForgotPassword &&
+      GOOGLE_OAUTH.CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID_HERE' &&
+      !googleInitializedRef.current &&
+      clientIdRef.current !== GOOGLE_OAUTH.CLIENT_ID) {
+
+      const initGoogleSignIn = async () => {
+        try {
+          googleInitializedRef.current = true;
+          clientIdRef.current = GOOGLE_OAUTH.CLIENT_ID;
+
+          const google = await initializeGoogleSignIn(
+            GOOGLE_OAUTH.CLIENT_ID,
+            async (response) => {
+              setGoogleLoading(true);
+              setGoogleError(null);
+
+              try {
+                const result = await handleGoogleSignInSuccess(response);
+
+                if (result.success) {
+                  // Store token and customer data
+                  localStorage.setItem('customerToken', result.token);
+                  localStorage.setItem('customerData', JSON.stringify(result.customer));
+
+                  navigate(returnUrl || '/projects');
+                } else {
+                  setGoogleError(result.error);
+                }
+              } catch (error) {
+                setGoogleError('Google sign-in failed');
+              } finally {
+                setGoogleLoading(false);
+              }
+            }
+          );
+
+          // Render Google Sign-In button
+          setTimeout(() => {
+            const googleButtonElement = document.getElementById('google-signin-button');
+            if (googleButtonElement) {
+              renderGoogleButton(google, 'google-signin-button', {
+                theme: 'filled_blue',
+                size: 'large',
+                text: 'signin_with',
+                shape: 'rectangular',
+                logo_alignment: 'left',
+                width: 320,
+              });
+            }
+          }, 100);
+        } catch (error) {
+          console.error('Failed to initialize Google Sign-In:', error);
+          googleInitializedRef.current = false;
+          clientIdRef.current = null;
+        }
+      };
+
+      initGoogleSignIn();
+
+      // Cleanup function
+      return () => {
+        googleInitializedRef.current = false;
+        clientIdRef.current = null;
+        cleanupGoogleSignIn();
+      };
+    }
+  }, [showForgotPassword, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Sign in attempt:', formData);
-      // Handle successful sign in here
-    } catch (error) {
-      console.error('Sign in error:', error);
-    } finally {
-      setIsLoading(false);
+      await customerLogin(email, password, rememberMe);
+      navigate(returnUrl || '/projects');
+    } catch (err) {
+      console.error('Login error:', err);
     }
   };
 
   return (
-    <div className="bg-surface font-body text-on-surface flex flex-col min-h-screen">
-      {/* Main Content */}
-      <main className="flex-grow flex items-center justify-center relative overflow-hidden px-6 py-20" style={{
-        backgroundImage: 'linear-gradient(#eeeeee 1px, transparent 1px), linear-gradient(90deg, #eeeeee 1px, transparent 1px)',
-        backgroundSize: '40px 40px'
-      }}>
-        {/* Background Accents */}
-        <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[60%] bg-[#a2effd] opacity-20 blur-[120px] rounded-full"></div>
-        <div className="absolute bottom-[-10%] right-[-5%] w-[30%] h-[50%] bg-[#cde7ed] opacity-30 blur-[100px] rounded-full"></div>
+    <>
+      {showForgotPassword ? (
+        <ForgotPassword onBack={() => setShowForgotPassword(false)} />
+      ) : (
+        <div className="min-h-screen bg-[#131313] text-[#e2e2e2] font-sans selection:bg-primary/30 selection:text-primary">
+          {/* Header */}
+          <Header
+            showProfile={false}
+            onLoginClick={() => { }}
+          />
 
-        {/* Central Identity and Login Card */}
-        <div className="w-full max-w-[480px] z-10">
-          {/* Branding Header */}
-          <div className="mb-10 text-center md:text-left">
-            <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
-              <div className="w-8 h-8 bg-[#00606b] rounded-full flex items-center justify-center">
-                <span className="text-white text-sm" style={{ fontFamily: 'Material Symbols Outlined' }}>architecture</span>
-              </div>
-              <span className="font-bold text-2xl tracking-tighter text-on-surface" style={{ fontFamily: 'Plus Jakarta Sans' }}>DEVFORGE</span>
+          <div className="flex flex-col items-center justify-center p-6 relative overflow-hidden">
+            {/* Background Pattern */}
+            <div className="fixed inset-0 pointer-events-none opacity-20 overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)', backgroundSize: '80px 80px' }}></div>
             </div>
-            <h1 className="text-3xl font-bold tracking-tight text-on-surface mb-2" style={{ fontFamily: 'Plus Jakarta Sans' }}>System Access</h1>
-            <p className="text-[#3e494b] text-sm tracking-wide uppercase" style={{ fontFamily: 'Plus Jakarta Sans' }}>Architectural Operating System v4.0.2</p>
-          </div>
 
-          {/* Main Auth Card */}
-          <div className="bg-white/70 backdrop-blur-[20px] rounded-xl p-8 md:p-12 shadow-[0_4px_20px_-2px_rgba(0,31,36,0.04),0_12px_40px_-8px_rgba(0,31,36,0.08)] border border-[#bdc8cb]/10">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Email Field */}
-              <div className="space-y-2">
-                <label className="block text-xs font-semibold uppercase tracking-widest text-[#3e494b]" style={{ fontFamily: 'Plus Jakarta Sans' }}>Identity Identifier</label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6e797b]" style={{ fontFamily: 'Material Symbols Outlined' }}>alternate_email</span>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full pl-12 pr-4 py-3 bg-white border border-[#bdc8cb]/20 focus:border-[#00606b] focus:ring-2 focus:ring-[#85d2e0]/30 rounded-lg transition-all outline-none text-sm"
-                    placeholder="email@architect.os"
-                    autoComplete="email"
-                  />
-                </div>
+            <div className="fixed top-1/4 -left-20 w-64 h-64 bg-[#d0bcff]/10 rounded-full blur-[100px] pointer-events-none"></div>
+            <div className="fixed bottom-1/4 -right-20 w-96 h-96 bg-[#adc6ff]/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+            <motion.main
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="w-full max-w-md z-10"
+            >
+              <div className="text-center mb-8 space-y-2">
+                <h1 className="font-serif text-3xl tracking-tight text-[#e2e2e2]">Welcome Back</h1>
+                <p className="text-[#c2c6d6] text-sm">
+                  {message || 'Sign in to your account'}
+                </p>
               </div>
 
-              {/* Password Field */}
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <label className="block text-xs font-semibold uppercase tracking-widest text-[#3e494b]" style={{ fontFamily: 'Plus Jakarta Sans' }}>Security Protocol</label>
+              {/* Authentication requirement message */}
+              {message && (
+                <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg flex items-center gap-3">
+                  <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0" />
+                  <p className="text-blue-300 text-sm">{message}</p>
+                </div>
+              )}
+
+              <div className="bg-[#353535]/20 backdrop-blur-xl rounded-xl p-8 border border-white/5 shadow-2xl">
+                {error && (
+                  <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-3">
+                    <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                    <p className="text-red-300 text-sm">{error}</p>
+                  </div>
+                )}
+
+                {googleError && (
+                  <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-3">
+                    <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                    <p className="text-red-300 text-sm">{googleError}</p>
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-[#adc6ff] mb-2">Email</label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#8c909f]" />
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 bg-[#0e0e0e]/50 border border-[#424754]/30 rounded-lg text-[#e2e2e2] placeholder:text-[#8c909f]/50 focus:outline-none focus:border-[#adc6ff]/50 transition-all duration-300"
+                        placeholder="Enter your email"
+                        required
+                        disabled={loading || googleLoading}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#adc6ff] mb-2">Password</label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#8c909f]" />
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="w-full pl-10 pr-12 py-3 bg-[#0e0e0e]/50 border border-[#424754]/30 rounded-lg text-[#e2e2e2] placeholder:text-[#8c909f]/50 focus:outline-none focus:border-[#adc6ff]/50 transition-all duration-300"
+                        placeholder="Enter your password"
+                        required
+                        disabled={loading || googleLoading}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#8c909f] hover:text-[#adc6ff] transition-colors"
+                        disabled={loading || googleLoading}
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                        className="w-4 h-4 bg-[#0e0e0e]/50 border-[#424754]/30 rounded text-[#adc6ff] focus:ring-[#adc6ff]"
+                        disabled={loading || googleLoading}
+                      />
+                      <span className="ml-2 text-sm text-[#c2c6d6]">Remember me</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setShowForgotPassword(true)}
+                      className="text-sm text-[#adc6ff] hover:text-[#adc6ff]/80 transition-colors"
+                      disabled={loading || googleLoading}
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
+
                   <button
-                    type="button"
-                    onClick={onForgotPassword}
-                    className="text-xs font-semibold text-[#00606b] hover:underline transition-all"
+                    type="submit"
+                    disabled={loading || googleLoading}
+                    className="w-full py-3 bg-gradient-to-r from-[#adc6ff] to-[#571bc1] text-[#002e6a] font-semibold rounded-lg shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
                   >
-                    Forgot Password?
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Signing in...
+                      </>
+                    ) : (
+                      <>
+                        Sign In
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
                   </button>
+                </form>
+
+                {/* Google Sign-In Button */}
+                <div className="mt-6">
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-[#424754]/30"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="px-4 bg-[#353535]/20 text-[#8c909f]">Or continue with</span>
+                    </div>
+                  </div>
+
+                  <div className="mt-6">
+                    {GOOGLE_OAUTH.CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID_HERE' ? (
+                      <div className="flex justify-center">
+                        <div id="google-signin-button"></div>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled={loading || googleLoading}
+                        className="w-full py-3 bg-[#4285f4] text-white font-medium rounded-lg hover:bg-[#357ae8] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                        onClick={() => {
+                          setGoogleError('Google OAuth is not configured. Please set up your Google Client ID.');
+                        }}
+                      >
+                        <Chrome className="w-5 h-5" />
+                        Sign in with Google
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6e797b]" style={{ fontFamily: 'Material Symbols Outlined' }}>lock</span>
-                  <input
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="w-full pl-12 pr-4 py-3 bg-white border border-[#bdc8cb]/20 focus:border-[#00606b] focus:ring-2 focus:ring-[#85d2e0]/30 rounded-lg transition-all outline-none text-sm"
-                    placeholder="••••••••"
-                    autoComplete="current-password"
-                  />
+
+                <div className="mt-6 text-center">
+                  <p className="text-sm text-[#c2c6d6]">
+                    Don't have an account? <button onClick={() => navigate('/signup', { state: redirectState })} className="text-[#adc6ff] hover:text-[#adc6ff]/80 transition-colors underline bg-transparent border-none cursor-pointer">Sign up</button>
+                  </p>
                 </div>
               </div>
-
-              {/* Actions */}
-              <div className="pt-2 space-y-4">
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full py-4 bg-[#00606b] text-white font-bold rounded-full hover:bg-[#247985] transition-all shadow-lg shadow-[#00606b]/10 flex items-center justify-center gap-2 group"
-                >
-                  <span>{isLoading ? 'Signing In...' : 'Sign In'}</span>
-                  <span className="text-sm group-hover:translate-x-1 transition-transform" style={{ fontFamily: 'Material Symbols Outlined' }}>arrow_forward</span>
-                </button>
-
-                <div className="relative flex items-center py-4">
-                  <div className="flex-grow border-t border-[#bdc8cb]/30"></div>
-                  <span className="flex-shrink mx-4 text-[10px] text-[#6e797b] uppercase tracking-tighter" style={{ fontFamily: 'Plus Jakarta Sans' }}>Authorized Third Party</span>
-                  <div className="flex-grow border-t border-[#bdc8cb]/30"></div>
-                </div>
-
-                <button
-                  type="button"
-                  className="w-full py-3 bg-[#e8e8e8] text-[#1a1c1c] font-semibold rounded-full hover:bg-[#dadada] transition-all flex items-center justify-center gap-3 border border-[#bdc8cb]/10"
-                >
-                  <img
-                    alt="Google logo"
-                    className="w-5 h-5"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuhtHjb5HiWp_30QwFve7cqxJ_WN0qG7cCvCt87Df6OM5AY5bqdB8_LGFPnAevfKTemmPCB-LtssM1xd3Sr13z4NQKBCTWRI-GvRm4rM4HnJue4tlN7MXWsld5jzq2KfGToM4OeIIj4iadJuCC8rHpr3ua5NZAewud6iqTm9yjrI374_Dg_RgYJLyz1n6TWAztf83BHdJ5f5eBGWFhfZs6qZDGQTT4PiWi-qP4f33QdWWXiZlC7V16iRLHDRFENKMYNefRZ8t_kcg"
-                  />
-                  <span>Continue with Google</span>
-                </button>
-              </div>
-            </form>
-
-            {/* Footer Link */}
-            <div className="mt-10 text-center">
-              <p className="text-sm text-[#3e494b]">
-                New terminal?
-                <button
-                  onClick={() => navigate('/signup')}
-                  className="text-[#00606b] font-bold hover:underline ml-1"
-                >
-                  Create Account
-                </button>
-              </p>
-            </div>
-          </div>
-
-          {/* Technical Detail Metadata */}
-          <div className="mt-8 flex justify-between items-center px-4 opacity-40">
-            <div className="flex flex-col">
-              <span className="text-[10px] uppercase tracking-widest" style={{ fontFamily: 'Plus Jakarta Sans' }}>Region</span>
-              <span className="font-bold text-xs" style={{ fontFamily: 'Plus Jakarta Sans' }}>US-EAST-01</span>
-            </div>
-            <div className="flex flex-col text-right">
-              <span className="text-[10px] uppercase tracking-widest" style={{ fontFamily: 'Plus Jakarta Sans' }}>Status</span>
-              <div className="flex items-center gap-2 justify-end">
-                <span className="w-1.5 h-1.5 bg-[#00606b] rounded-full"></span>
-                <span className="font-bold text-xs" style={{ fontFamily: 'Plus Jakarta Sans' }}>ACTIVE</span>
-              </div>
-            </div>
+            </motion.main>
           </div>
         </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="w-full py-12 mt-auto border-t border-[#bdc8cb]/20 bg-[#f9f9f9]">
-        <div className="flex flex-col md:flex-row justify-between items-center px-10 max-w-[1440px] mx-auto gap-4">
-          <div className="text-xs uppercase tracking-widest text-[#3e494b]" style={{ fontFamily: 'Plus Jakarta Sans' }}>
-            © 2024 Clinical Architect Industries. All rights reserved.
-          </div>
-          <div className="flex gap-8">
-            <a className="text-xs uppercase tracking-widest text-[#3e494b] hover:text-[#00606b] transition-all" style={{ fontFamily: 'Plus Jakarta Sans' }} href="#">Privacy Policy</a>
-            <a className="text-xs uppercase tracking-widest text-[#3e494b] hover:text-[#00606b] transition-all" style={{ fontFamily: 'Plus Jakarta Sans' }} href="#">Terms of Service</a>
-            <a className="text-xs uppercase tracking-widest text-[#3e494b] hover:text-[#00606b] transition-all" style={{ fontFamily: 'Plus Jakarta Sans' }} href="#">System Status</a>
-          </div>
-        </div>
-      </footer>
-    </div>
+      )}
+    </>
   );
 };
+
+export { SignIn };

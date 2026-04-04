@@ -18,8 +18,10 @@ export const useKonamiCode = (callback: () => void) => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (!e.key) return; // Add null check
+
       const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
-      
+
       setInput((prev) => {
         const newInput = [...prev, key];
         const isMatch = newInput.every((k, index) => k === KONAMI_CODE[index]);

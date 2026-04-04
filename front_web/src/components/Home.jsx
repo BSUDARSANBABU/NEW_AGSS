@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Header } from './Header';
 import { KonamiTransition } from './KonamiTransition';
 import { useKonamiCode } from '../hooks/useKonamiCode';
+import { ProjectDetails } from './ProjectDetails';
+import { ImageCarousel } from './ImageCarousel';
 import apiService from '../services/api';
 import {
   Rocket,
@@ -16,16 +18,39 @@ import {
   Users,
   Star
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { cn } from '../lib/utils';
+import { useCustomerAuth } from '../context/CustomerAuthContext';
 
 const Home = () => {
   const [showKonamiTransition, setShowKonamiTransition] = useState(false);
   const [projects, setProjects] = useState([]);
+  const [projectImages, setProjectImages] = useState({});
   const [developers, setDevelopers] = useState([]);
   const [resources, setResources] = useState([]);
   const [reviews, setReviews] = useState([]);
+  const [heroContent, setHeroContent] = useState({
+    heading: 'ENGINEERED PRECISION. ISOFORM PRIME.',
+    subheading: 'Architecting the future of high-frequency deployments with surgical accuracy and clinical performance metrics.',
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBrXEeYK7RxE0S_zQDdZb31pqpsxaASgmUhbPl_WRSo2SwfxzLQJgqTD7qbudBERjnNEbk9mHPByY8JfIJxLAK8_ksMB84SflWIS2DUxCeEBL_QkYyp_sna5QRFdbFHdv3ly4yezaWwV91RLMUyocrJm66GXd5coklbKERUkmfl7y_JBmiEVQ71bO0RILvYUmsKRtJWPXTD9z6SyonIbjSdKIVz_zp0tNfLdK8ocY8CeqDZTJLRsUdlkqgrCTaluQSQu2uKAz62p80',
+    button1Text: 'Initiate Deployment',
+    button1Url: '/admin',
+    button1IsPrimary: true,
+    button2Text: 'View Technical Specs',
+    button2Url: '#',
+    button2IsPrimary: false,
+    // Hero Styling Settings
+    headingFontFamily: 'Inter, sans-serif',
+    headingFontSize: '4rem',
+    subheadingFontFamily: 'Inter, sans-serif',
+    subheadingFontSize: '1.125rem',
+    imageWidth: '100%',
+    imageHeight: 'auto'
+  });
   const [loading, setLoading] = useState(true);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const navigate = useNavigate();
+  const { isAuthenticated } = useCustomerAuth();
 
   // Initialize Konami code detection
   useKonamiCode(() => {
@@ -36,16 +61,54 @@ const Home = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [projectsData, developersData, resourcesData, reviewsData] = await Promise.all([
+        const [projectsData, developersData, resourcesData, reviewsData, siteSettingsData] = await Promise.all([
           apiService.getProjects(),
           apiService.getDevelopers(),
           apiService.getResources(),
-          apiService.getPerformanceReviews()
+          apiService.getPerformanceReviews(),
+          apiService.getSiteSettings()
         ]);
+
         setProjects(projectsData || []);
         setDevelopers(developersData || []);
         setResources(resourcesData || []);
         setReviews(reviewsData || []);
+
+        // Update hero content from site settings
+        if (siteSettingsData && siteSettingsData.data && siteSettingsData.data.length > 0) {
+          const settings = siteSettingsData.data[0];
+          setHeroContent({
+            heading: settings.hero_heading || 'ENGINEERED PRECISION. ISOFORM PRIME.',
+            subheading: settings.hero_subheading || 'Architecting the future of high-frequency deployments with surgical accuracy and clinical performance metrics.',
+            image: settings.hero_image || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBrXEeYK7RxE0S_zQDdZb31pqpsxaASgmUhbPl_WRSo2SwfxzLQJgqTD7qbudBERjnNEbk9mHPByY8JfIJxLAK8_ksMB84SflWIS2DUxCeEBL_QkYyp_sna5QRFdbFHdv3ly4yezaWwV91RLMUyocrJm66GXd5coklbKERUkmfl7y_JBmiEVQ71bO0RILvYUmsKRtJWPXTD9z6SyonIbjSdKIVz_zp0tNfLdK8ocY8CeqDZTJLRsUdlkqgrCTaluQSQu2uKAz62p80',
+            button1Text: settings.hero_button1_text || 'Initiate Deployment',
+            button1Url: settings.hero_button1_url || '/admin',
+            button1IsPrimary: settings.hero_button1_is_primary !== undefined ? settings.hero_button1_is_primary : true,
+            button2Text: settings.hero_button2_text || 'View Technical Specs',
+            button2Url: settings.hero_button2_url || '#',
+            button2IsPrimary: settings.hero_button2_is_primary !== undefined ? settings.hero_button2_is_primary : false,
+            // Hero Styling Settings
+            headingFontFamily: settings.hero_heading_font_family || 'Inter, sans-serif',
+            headingFontSize: settings.hero_heading_font_size || '4rem',
+            subheadingFontFamily: settings.hero_subheading_font_family || 'Inter, sans-serif',
+            subheadingFontSize: settings.hero_subheading_font_size || '1.125rem',
+            imageWidth: settings.hero_image_width || '100%',
+            imageHeight: settings.hero_image_height || 'auto'
+          });
+        }
+
+        // Extract images from project response (already included in project_images field)
+        const imagesData = {};
+        for (const project of projectsData || []) {
+          // Use project_images from the serializer response
+          const projectImages = project.project_images || [];
+          const allImages = [
+            project.project_image || project.image,
+            ...projectImages.map(img => img.image).filter(Boolean)
+          ].filter(Boolean); // Remove null/undefined values
+          imagesData[project.id] = allImages;
+        }
+        setProjectImages(imagesData);
       } catch (error) {
         console.error('Failed to fetch data:', error);
       } finally {
@@ -59,6 +122,48 @@ const Home = () => {
   const handleKonamiComplete = () => {
     setShowKonamiTransition(false);
     window.location.href = '/login';
+  };
+
+  // Handle project details modal
+  const handleProjectClick = (project) => {
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      // Redirect to signup page with a return URL
+      navigate('/signup', {
+        state: {
+          message: 'Please sign up to view project details',
+          returnUrl: '/',
+          action: 'view_project',
+          projectId: project.id
+        }
+      });
+      return;
+    }
+
+    // Get all images for this project from projectImages state
+    const projectAllImages = projectImages[project.id] || [project.project_image || project.image || 'https://via.placeholder.com/800x400'];
+
+    // Transform project data to match ProjectDetails component expectations
+    const transformedProject = {
+      id: project.id,
+      title: project.title,
+      desc: project.description || project.desc || 'No description available',
+      img: project.project_image || project.image || 'https://via.placeholder.com/800x400',
+      images: projectAllImages, // Pass all images array
+      status: project.status || 'Active',
+      category: project.category || 'Development',
+      tech: project.technologies_used ? project.technologies_used.split(',').map(t => t.trim()) : ['REACT', 'NODEJS'],
+      lead: project.lead_name || 'System Administrator',
+      leadAvatar: project.lead_avatar || 'https://via.placeholder.com/100',
+      created_at: project.created_at,
+      team_size: project.team_size || 'Small'
+    };
+
+    setSelectedProject(transformedProject);
+  };
+
+  const closeProjectDetails = () => {
+    setSelectedProject(null);
   };
   return (
     <div className="min-h-screen bg-surface text-on-surface font-sans selection:bg-primary-fixed selection:text-on-primary-fixed">
@@ -91,18 +196,31 @@ const Home = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="text-7xl font-extrabold tracking-tighter text-on-surface mb-8 leading-[0.95]"
+                className="font-extrabold tracking-tighter text-on-surface mb-8 leading-[0.95]"
+                style={{
+                  fontFamily: heroContent.headingFontFamily,
+                  fontSize: heroContent.headingFontSize
+                }}
               >
-                ENGINEERED <br />PRECISION. <br /><span className="text-primary">ISOFORM PRIME.</span>
+                {heroContent.heading.split('\n').map((line, i) => (
+                  <span key={i}>
+                    {line}
+                    {i < heroContent.heading.split('\n').length - 1 && <br />}
+                  </span>
+                ))}
               </motion.h1>
 
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-lg text-on-surface-variant max-w-lg mb-12 leading-relaxed"
+                className="text-on-surface-variant max-w-lg mb-12 leading-relaxed"
+                style={{
+                  fontFamily: heroContent.subheadingFontFamily,
+                  fontSize: heroContent.subheadingFontSize
+                }}
               >
-                Architecting the future of high-frequency deployments with surgical accuracy and clinical performance metrics.
+                {heroContent.subheading}
               </motion.p>
 
               <motion.div
@@ -111,16 +229,31 @@ const Home = () => {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className="flex flex-wrap gap-4"
               >
-                <Link
-                  to="/admin"
-                  className="px-8 py-4 bg-primary text-on-primary font-bold rounded-full hover:opacity-90 transition-all flex items-center gap-3 shadow-lg shadow-primary/20"
-                >
-                  Initiate Deployment
-                  <Rocket className="w-5 h-5" />
-                </Link>
-                <button className="px-8 py-4 bg-surface-container-high text-on-surface font-bold rounded-full hover:bg-surface-container-highest transition-all">
-                  View Technical Specs
-                </button>
+                {heroContent.button1Text && (
+                  <Link
+                    to={heroContent.button1Url}
+                    className={`px-8 py-4 font-bold rounded-full hover:opacity-90 transition-all flex items-center gap-3 shadow-lg ${heroContent.button1IsPrimary
+                      ? 'bg-primary text-on-primary shadow-primary/20'
+                      : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'
+                      }`}
+                  >
+                    {heroContent.button1Text}
+                    {heroContent.button1IsPrimary && <Rocket className="w-5 h-5" />}
+                  </Link>
+                )}
+
+                {heroContent.button2Text && (
+                  <Link
+                    to={heroContent.button2Url}
+                    className={`px-8 py-4 font-bold rounded-full hover:opacity-90 transition-all flex items-center gap-3 shadow-lg ${heroContent.button2IsPrimary
+                      ? 'bg-primary text-on-primary shadow-primary/20'
+                      : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'
+                      }`}
+                  >
+                    {heroContent.button2Text}
+                    {heroContent.button2IsPrimary && <Rocket className="w-5 h-5" />}
+                  </Link>
+                )}
               </motion.div>
             </div>
 
@@ -133,10 +266,17 @@ const Home = () => {
               <div className="aspect-square bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/20 p-8">
                 <div className="w-full h-full bg-surface-container-lowest rounded-lg border border-outline-variant/20 overflow-hidden relative shadow-sm">
                   <img
-                    alt="Technical Visualization"
-                    className="w-full h-full object-cover opacity-80"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrXEeYK7RxE0S_zQDdZb31pqpsxaASgmUhbPl_WRSo2SwfxzLQJgqTD7qbudBERjnNEbk9mHPByY8JfIJxLAK8_ksMB84SflWIS2DUxCeEBL_QkYyp_sna5QRFdbFHdv3ly4yezaWwV91RLMUyocrJm66GXd5coklbKERUkmfl7y_JBmiEVQ71bO0RILvYUmsKRtJWPXTD9z6SyonIbjSdKIVz_zp0tNfLdK8ocY8CeqDZTJLRsUdlkqgrCTaluQSQu2uKAz62p80"
+                    alt="Hero Visualization"
+                    className="object-cover opacity-80"
+                    style={{
+                      width: heroContent.imageWidth,
+                      height: heroContent.imageHeight
+                    }}
+                    src={heroContent.image}
                     referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      e.target.src = 'https://via.placeholder.com/800x600/f3f4f6/1f2937?text=HERO+IMAGE';
+                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-transparent"></div>
                   <div className="absolute bottom-6 left-6 right-6">
@@ -203,14 +343,9 @@ const Home = () => {
               <h2 className="text-3xl font-black tracking-tighter text-on-surface uppercase">Featured Projects</h2>
               <p className="text-on-surface-variant font-medium">Recent projects from our development team.</p>
             </div>
-            <div className="flex gap-2">
-              <button className="w-12 h-12 rounded-full border border-outline-variant/20 flex items-center justify-center hover:bg-surface-container-low transition-all">
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-              <button className="w-12 h-12 rounded-full border border-outline-variant/20 flex items-center justify-center hover:bg-surface-container-low transition-all">
-                <ArrowRight className="w-5 h-5" />
-              </button>
-            </div>
+            <Link to="/projects" className="text-primary text-sm font-bold flex items-center gap-1 hover:underline">
+              View All <ExternalLink className="w-3 h-3" />
+            </Link>
           </div>
 
           {loading ? (
@@ -221,18 +356,12 @@ const Home = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {projects.slice(0, 3).map((project, i) => (
                 <div key={project.id || i} className="bg-surface-container-lowest p-1 rounded-xl border border-outline-variant/20 hover:shadow-lg transition-shadow">
-                  {project.project_image && (
-                    <div className="aspect-video mb-6 overflow-hidden rounded-lg">
-                      <img
-                        alt={project.title}
-                        className="w-full h-full object-cover"
-                        src={project.project_image}
-                        onError={(e) => {
-                          e.target.src = 'https://via.placeholder.com/400x225?text=Project+Image';
-                        }}
-                      />
-                    </div>
-                  )}
+                  <div className="aspect-video mb-6 overflow-hidden rounded-lg">
+                    <ImageCarousel
+                      images={projectImages[project.id] || []}
+                      alt={project.title}
+                    />
+                  </div>
                   <div className="px-6 pb-8">
                     <div className="flex justify-between items-start mb-4">
                       <h3 className="text-xl font-bold tracking-tight">{project.title}</h3>
@@ -247,16 +376,24 @@ const Home = () => {
                       <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">
                         {project.technologies_used ? project.technologies_used.split(',').slice(0, 2).join(', ') : 'Web Development'}
                       </span>
-                      {project.live_link && (
-                        <a
-                          href={project.live_link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary text-sm font-bold flex items-center gap-1 hover:underline"
+                      <div className="flex gap-2 items-center">
+                        <button
+                          onClick={() => handleProjectClick(project)}
+                          className="text-primary text-xs font-bold flex items-center gap-1 hover:underline"
                         >
-                          Details <ExternalLink className="w-3 h-3" />
-                        </a>
-                      )}
+                          See More
+                        </button>
+                        {project.live_link && (
+                          <a
+                            href={project.live_link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary text-sm font-bold flex items-center gap-1 hover:underline"
+                          >
+                            Details <ExternalLink className="w-3 h-3" />
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -488,6 +625,14 @@ const Home = () => {
           </div>
         </div>
       </footer>
+
+      {/* Project Details Modal */}
+      {selectedProject && (
+        <ProjectDetails
+          project={selectedProject}
+          onClose={closeProjectDetails}
+        />
+      )}
     </div>
   );
 };

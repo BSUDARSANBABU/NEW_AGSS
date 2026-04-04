@@ -217,9 +217,21 @@ class ApiService {
     return this.put(`/job-applications/${id}/`, applicationData);
   }
 
-  // Demo Booking
+  // Demo Bookings
+  async getDemoBookings() {
+    return this.get('/demo-bookings/');
+  }
+
   async createDemoBooking(bookingData) {
-    return this.post('/BookDemo/', bookingData);
+    return this.post('/demo-bookings/', bookingData);
+  }
+
+  async updateDemoBooking(id, bookingData) {
+    return this.put(`/demo-bookings/${id}/`, bookingData);
+  }
+
+  async deleteDemoBooking(id) {
+    return this.delete(`/demo-bookings/${id}/`);
   }
 
   // Customers
@@ -273,23 +285,6 @@ class ApiService {
 
   async verifyOTP(email, otp) {
     return this.post('/verify-otp/', { email, otp });
-  }
-
-  // Demo Bookings
-  async getDemoBookings() {
-    return this.get('/demo-bookings/');
-  }
-
-  async createDemoBooking(bookingData) {
-    return this.post('/demo-bookings/', bookingData);
-  }
-
-  async updateDemoBooking(id, bookingData) {
-    return this.put(`/demo-bookings/${id}/`, bookingData);
-  }
-
-  async deleteDemoBooking(id) {
-    return this.delete(`/demo-bookings/${id}/`);
   }
 
   // Performance Reviews

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { PublicLayout } from './PublicLayout';
 import { Calendar, Clock, Video, Send } from 'lucide-react';
 import apiService from '../services/api';
+import { useNavigate } from 'react-router-dom';
+import { useCustomerAuth } from '../context/CustomerAuthContext';
 
 export const BookDemo = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +17,8 @@ export const BookDemo = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const { isAuthenticated } = useCustomerAuth();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -26,6 +30,21 @@ export const BookDemo = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      // Redirect to signup page with a return URL
+      navigate('/signup', {
+        state: {
+          message: 'Please sign up to request a demo',
+          returnUrl: '/book-demo',
+          action: 'request_demo',
+          formData: formData
+        }
+      });
+      return;
+    }
+
     setLoading(true);
     setError('');
 
@@ -150,6 +169,17 @@ export const BookDemo = () => {
                   required
                   className="w-full px-4 py-3 bg-surface-container-low rounded-xl border-none focus:ring-2 focus:ring-primary/20 outline-none"
                   placeholder="+1 (555) 123-4567"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Preferred Date</label>
+                <input
+                  type="date"
+                  name="preferred_date"
+                  value={formData.preferred_date}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-4 py-3 bg-surface-container-low rounded-xl border-none focus:ring-2 focus:ring-primary/20 outline-none"
                 />
               </div>
               <div className="space-y-2">

@@ -3,6 +3,8 @@ import { PublicLayout } from './PublicLayout';
 import { Search, Verified, Terminal, X, ChevronDown, Eye } from 'lucide-react';
 import { DeveloperDetails } from './DeveloperDetails';
 import apiService from '../services/api';
+import { useNavigate } from 'react-router-dom';
+import { useCustomerAuth } from '../context/CustomerAuthContext';
 
 const DeveloperSidebar = ({
   selectedSkills,
@@ -78,6 +80,8 @@ export const Developers = () => {
   const [developers, setDevelopers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const { isAuthenticated } = useCustomerAuth();
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState('');
@@ -200,6 +204,20 @@ export const Developers = () => {
 
   // Handle developer details modal
   const handleDeveloperClick = async (developer) => {
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      // Redirect to signup page with a return URL
+      navigate('/signup', {
+        state: {
+          message: 'Please sign up to view developer details',
+          returnUrl: '/developers',
+          action: 'view_developer',
+          developerId: developer.id
+        }
+      });
+      return;
+    }
+
     setSelectedDeveloper(developer);
     setLoadingProjects(true);
 

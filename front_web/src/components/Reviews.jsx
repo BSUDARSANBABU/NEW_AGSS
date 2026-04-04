@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Header } from './Header';
+import { useLocation } from 'react-router-dom';
 import apiService from '../services/api';
 
 const Reviews = () => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const location = useLocation();
   const [formData, setFormData] = useState({
     reviewer_name: '',
     rating: 5,
@@ -29,6 +31,19 @@ const Reviews = () => {
 
     fetchReviews();
   }, []);
+
+  // Check for project data from navigation state
+  useEffect(() => {
+    if (location.state?.projectData) {
+      const projectData = location.state.projectData;
+      setFormData(prev => ({
+        ...prev,
+        project: projectData.id,
+        project_title: projectData.title || projectData.name
+      }));
+      setShowForm(true);
+    }
+  }, [location.state]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -281,6 +296,15 @@ const Reviews = () => {
                       placeholder="Q1 2024"
                     />
                   </div>
+
+                  {formData.project_title && (
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Project</label>
+                      <div className="w-full px-4 py-3 bg-primary/10 border border-primary/20 rounded-xl text-on-primary font-medium">
+                        {formData.project_title}
+                      </div>
+                    </div>
+                  )}
 
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Feedback</label>

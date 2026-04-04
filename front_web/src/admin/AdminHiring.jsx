@@ -34,15 +34,8 @@ const AdminHiring = () => {
         setApplications(appsData);
       } catch (error) {
         console.error("Error fetching hiring data:", error);
-        // Use mock data as fallback
-        setJobs([
-          { id: 1, title: 'Senior Developer', description: 'Lead developer role', salary_range: '$100k-$150k', status: 'open' },
-          { id: 2, title: 'UI Designer', description: 'Design user interfaces', salary_range: '$80k-$120k', status: 'closed' }
-        ]);
-        setApplications([
-          { id: 1, full_name: 'John Doe', email: 'john@example.com', applied_at: '2024-01-15', status: 'pending', resume_url: '#' },
-          { id: 2, full_name: 'Jane Smith', email: 'jane@example.com', applied_at: '2024-01-16', status: 'reviewing', resume_url: '#' }
-        ]);
+        setJobs([]);
+        setApplications([]);
       } finally {
         setLoading(false);
       }

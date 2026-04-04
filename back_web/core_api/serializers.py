@@ -422,9 +422,28 @@ class DocumentationSerializer(serializers.ModelSerializer):
             "project_name",
         ]
 class SiteSettingsSerializer(serializers.ModelSerializer):
+    logo = serializers.SerializerMethodField()
+    hero_image = serializers.SerializerMethodField()
+    
     class Meta:
         model = SiteSettings
         fields = "__all__"
+    
+    def get_logo(self, obj):
+        if obj.logo:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.logo.url)
+            return obj.logo.url
+        return None
+    
+    def get_hero_image(self, obj):
+        if obj.hero_image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.hero_image.url)
+            return obj.hero_image.url
+        return None
 
 class InterviewProcessSerializer(serializers.ModelSerializer):
     class Meta:
